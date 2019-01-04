@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Steffen Hauge <steffen.oerum.hauge@hotmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,17 +22,45 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#version 330
+package net.runelite.client.plugins.puzzlesolver.solver;
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoord;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-out vec2 TexCoord;
-
-void main()
+@RequiredArgsConstructor
+@Getter
+public enum PuzzleSwapPattern
 {
-	gl_Position = vec4(aPos, 1.0);
+	ROTATE_LEFT_UP(new int[]{1, -1, 0, -1, -1, -1, -1, 0}, 1, 1), //Reference point
+	ROTATE_LEFT_DOWN(1, -1),
+	ROTATE_RIGHT_UP(-1, 1),
+	ROTATE_RIGHT_DOWN(-1, -1),
+	ROTATE_UP_LEFT(new int[]{-1, 1, -1, 0, -1, -1, 0, -1}, 1 , 1), //Reference point
+	ROTATE_UP_RIGHT(-1, 1),
+	ROTATE_DOWN_LEFT(1, -1),
+	ROTATE_DOWN_RIGHT(-1, -1),
+	LAST_PIECE_ROW(new int[]{-1, -1, 0, -1, -1, 0, -1, 1}, 1, 1),
+	LAST_PIECE_COLUMN(new int[]{-1, -1, -1, 0, 0, -1, 1, -1}, 1, 1),
+	SHUFFLE_UP_RIGHT(new int[]{1, -1, 0, -1}, 1, 1),
+	SHUFFLE_UP_LEFT(new int[]{-1, -1, 0, -1}, 1, 1),
+	SHUFFLE_UP_BELOW(new int[]{-1, 1, -1, 0}, 1, 1),
+	SHUFFLE_UP_ABOVE(new int[]{-1, -1, -1, 0}, 1, 1);
 
-	// Flip the UV because it's pre-flipped in the ui texture buffer, but we don't need it to be flipped here.
-	TexCoord = vec2(aTexCoord.x, 1 - aTexCoord.y);
+	/**
+	 * Points used for swaps relative to locVal
+	 */
+	private final int[] points;
+	/**
+	 * Modifier for X coordinate
+	 */
+	private final int modX;
+	/**
+	 * Modifier for Y coordinate
+	 */
+	private final int modY;
+
+	PuzzleSwapPattern(int modX, int modY)
+	{
+		this(null, modX, modY);
+	}
 }
